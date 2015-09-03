@@ -1,27 +1,34 @@
 var config = {
-	host: 'localhost',
-	database: 'un_whd',
-	user: 'root',
-	password: 'p@ssw0rd'
+	host: '',
+	database: '',
+	user: '',
+	password: ''
 };
 
 var semaphore = require('./../index')(config);
 
 semaphore.lock('test', 2)
-	.then(function(locked){
-		console.log('got a lock!', locked);
+	.then(function(didLock){
+		console.log('got a lock: ', didLock);
 
 		semaphore.islocked('test')
-			.then(function(locked){
-				console.log('islocked', locked);
+			.then(function(isLocked){
+				console.log('check if locked: ', isLocked);
 
 				semaphore.lock('test', 2)
-					.then(function(locked){
-						console.log('should be false ', locked);
+					.then(function(triedLock){
+						console.log('trying to lock a locked instance (should be false): ', triedLock);
 
 						semaphore.unlock('test')
-						.then(function(){
-							console.log('unlocked!');
+						.then(function(didUnlock){
+							console.log('did unlock: ', didUnlock);
+							semaphore.islocked('test')
+								.then(function(isReallyUnLocked){
+									console.log('is still locked: ', isReallyUnLocked);
+								})
+								.catch(function(err){
+									console.log('err on checking unlocked', err);
+								})
 						})
 						.catch(function(err){
 							console.log('failed to unlock ', err);

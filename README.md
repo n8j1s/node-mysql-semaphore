@@ -18,15 +18,18 @@ var Semaphore = require('mysql-semaphore');
 var semaphore = new Semaphore({host: 'localhost', database: 'mydb', user: 'someuser', password: 'somepassword'});
 ```
 
+### Before You Begin:
+Be aware that this library requires that the lock name be unique for a particular usage. If another application uses the same lock name, a lock could be inadvertantly unlocked. It is recommended that the lock name include application and database name and usage to ensure uniqueness - for example: mydb_myapp_myprocess as the lockName parameter.
+
 ### Methods:
 
 #### Get Lock
 
 ```sh
-semaphore.lock('test', 2)
-	.then(function(locked){
-		//locked will be true if lock is successful, false if unable to attain a lock
-		console.log(locked);
+semaphore.lock('test', 2) //test is the lock name
+	.then(function(didLock){
+		//didLock will be true if lock is successful, false if unable to attain a lock
+		console.log(didLock);
 	})
 	.catch(function(err){
 		console.log(err);
@@ -36,9 +39,9 @@ semaphore.lock('test', 2)
 #### Release Lock
 
 ```sh
-semaphore.unlock('test')
-	.then(function(){
-		console.log('unlocked!');
+semaphore.unlock('test') //test is the lock name
+	.then(function(didUnlock){
+		console.log('unlocked!', didUnlock);
 	})
 	.catch(function(err){
 		console.log(err);
@@ -48,9 +51,9 @@ semaphore.unlock('test')
 #### Check If Locked
 
 ```sh
-semaphore.islocked('test')
-	.then(function(locked){
-		console.log('islocked', locked);
+semaphore.islocked('test') //test is the lock name
+	.then(function(isLocked){
+		console.log('islocked', isLocked);
 	})
 	.catch(function(err){
 		console.log(err);
